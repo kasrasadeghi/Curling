@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +27,7 @@ public class CurlingUtilityFunctions
     public static CurlingEndResult [] readGameFromFile( String fileName )
     {
         // declare an array of CurlingEndResults to be the return value (do not create the array yet)
+        CurlingEndResult [] cer = null;
         
         try
         {
@@ -33,31 +35,43 @@ public class CurlingUtilityFunctions
             Scanner in = new Scanner( new File(fileName) );
             
             // read the number of ends
-            
+            int endCount = in.nextInt();
             
             // NOW create the array with the appropriate number of entries
-            
+            cer = new CurlingEndResult[endCount];
             
             // read several ends from the file
-            
+            for (int i = 0; i < endCount; i++) {
                 // each end starts with the number of stones for that end
+                int stoneCount = in.nextInt();
                
                 // declare and create an array to hold Stones
-                
+                Stone [] stones = new Stone[stoneCount];
                 // read several stones from the file
-                
+                for(int j = 0; j < stoneCount; j++) {
                     // first read in the color (as a string)
-                    
+                    String color = in.next();
                     // then the x and y coordinates
-                    
+                    double x = in.nextDouble();
+                    double y = in.nextDouble();
                     // create a new stone... if the color is "red" use Color.RED for the color
                     // if the color is "yellow", use Color.YELLOW
+                    Color stoneColor = Color.YELLOW;
+                    if (color.equals("red")) stoneColor = Color.RED;
                     // store the new stone in one of the entries for the array of stones
+                    
+                    Stone stone = new Stone(x, y, stoneColor);
+                    stones[j] = stone;
+                }
                     
                 
                 // create a new CurlingEndResult from the array of stones
+                    //k: already done?
                 // store the new CurlingEndResult in one of the entries of our CER array.
-                
+                for (int j = 0; j < endCount; j++){
+                    cer[j] = new CurlingEndResult(stones);
+                }
+            }
             
         } catch (FileNotFoundException ex)
         {
@@ -66,7 +80,7 @@ public class CurlingUtilityFunctions
         
         // return the result array
         
-        return null;
+        return cer;
     }
     
     // getBaseballStyleLine
@@ -78,7 +92,17 @@ public class CurlingUtilityFunctions
     // an array containing the score for team c in each end of the game plus the total score for the team
     private static int [] getBaseballStyleLine( CurlingEndResult [] game, Color c )
     {
-        return null;
+        int [] output = new int[game.length + 1];
+        for( int i = 0; i < game.length; i++) {
+            if (game[i].getEndScore() == 0)
+                output[i] = 0;
+            if (game[i].getEndScore() > 0 && c == Color.RED)
+                output[i] = game[i].getEndScore();
+            if (game[i].getEndScore() < 0 && c == Color.YELLOW)
+                output[i] = -game[i].getEndScore();
+        }
+        output[output.length-1] = Arrays.stream(output).sum();
+        return output;
     }
     
     public static int [][] getBaseballStyleBoard( CurlingEndResult [] game )
@@ -111,7 +135,14 @@ public class CurlingUtilityFunctions
     // that in end E, team c scored and had a cumulative score of I points. 
     public static int [] getClubStyleLine( CurlingEndResult [] game, Color c, int maxScore )
     {
-        return null;
+        int[] scores = getBaseballStyleLine(game, c);
+        int scoreSum = 0;
+        int[] output = new int[maxScore];
+        for( int i = 0; i < game.length; i++) {
+            scoreSum = scores[i];
+            output[scoreSum] = i+1;
+        }
+        return output;
     }
     
     public static int [][] getClubStyleBoard( CurlingEndResult [] game )

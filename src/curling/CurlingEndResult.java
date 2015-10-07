@@ -6,6 +6,7 @@
 package curling;
 
 import java.awt.Color;
+import java.util.Arrays;
 
 /**
  *
@@ -35,19 +36,18 @@ public class CurlingEndResult
     public boolean isScoringStone( Stone s )
     {
         // start by figuring out how far the stone is from the tee
-        
+        double distance = distanceToCenter(s);
         // if we're not in or touching the house, return false
-        
+        if (distance > 6) return false;
         
         // look at each stone in turn
-        
+        for (Stone stone : stones) 
             // if a stone is the opposite color and is closer than s, return false
-            
+            if(distanceToCenter(stone) < distanceToCenter(s) && stone.getColor() != s.getColor())
+                return false;
         
         // if none of the opposite color stones were closer, return true
-        
-        
-        return false;
+        return true;
     }
     
     // getDistanceToClosestStone
@@ -57,7 +57,15 @@ public class CurlingEndResult
     // are no stones of that value
     private double getDistanceToClosestStone( Color c )
     {
-        return 0;
+        double closest = Double.MAX_VALUE;
+        for ( Stone stone : stones ) {
+            if (stone.getColor() == c) {
+                double dist = distanceToCenter(stone);
+                if (dist < closest) closest = dist;
+            }
+        }
+            
+        return closest;
     }
     
     // getNumScoringStones
@@ -66,7 +74,10 @@ public class CurlingEndResult
     // output: the number of stones scoring for team c
     private int getNumScoringStones( Color c )
     {
-        return 0;
+        return (int) Arrays.stream(stones)
+                .filter(stone -> stone.getColor() == c)
+                .filter(stone -> isScoringStone(stone))
+                .count();
     }
 
     // getEndScore
@@ -76,7 +87,11 @@ public class CurlingEndResult
     // the result is a negative number, and if neither team scores (blank end) the result is 0.
     public int getEndScore()
     {
-        return 0;
+        if (getDistanceToClosestStone(Color.RED) == getDistanceToClosestStone(Color.YELLOW))
+            return 0;
+        return (getDistanceToClosestStone(Color.RED) < getDistanceToClosestStone(Color.YELLOW))
+                ? getNumScoringStones( Color.RED) 
+                : -getNumScoringStones( Color.YELLOW);
     }
     
     
