@@ -38,7 +38,7 @@ public class CurlingEndResult
         // start by figuring out how far the stone is from the tee
         double distance = distanceToCenter(s);
         // if we're not in or touching the house, return false
-        if (distance > 6) return false;
+        if (distance > 6.5) return false;
         
         // look at each stone in turn
         for (Stone stone : stones) 
