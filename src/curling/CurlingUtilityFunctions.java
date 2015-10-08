@@ -68,9 +68,9 @@ public class CurlingUtilityFunctions
                 // create a new CurlingEndResult from the array of stones
                     //k: already done?
                 // store the new CurlingEndResult in one of the entries of our CER array.
-                for (int j = 0; j < endCount; j++){
-                    cer[j] = new CurlingEndResult(stones);
-                }
+                
+                cer[i] = new CurlingEndResult(stones);
+                
             }
             
         } catch (FileNotFoundException ex)
@@ -138,9 +138,10 @@ public class CurlingUtilityFunctions
         int[] scores = getBaseballStyleLine(game, c);
         int scoreSum = 0;
         int[] output = new int[maxScore];
-        for( int i = 0; i < game.length; i++) {
-            scoreSum = scores[i];
-            output[scoreSum] = i+1;
+        for( int i = 0; i < game.length; i++) { //the end counter
+            scoreSum += scores[i];
+            if (scores[i] != 0)
+                output[scoreSum-1] = i + 1;
         }
         return output;
     }
